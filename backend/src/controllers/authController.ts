@@ -1,8 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../config/db');
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import * as db from '../config/db';
 
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
 
   try {
@@ -27,13 +28,13 @@ exports.register = async (req, res) => {
     );
 
     res.status(201).json(newUser.rows[0]);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
@@ -61,14 +62,14 @@ exports.login = async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: '1d' },
       (err, token) => {
         if (err) throw err;
         res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
       }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }

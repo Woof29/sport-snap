@@ -1,12 +1,14 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+import { Pool, QueryResult } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'sport_snap',
   password: process.env.DB_PASSWORD || 'postgres',
-  port: process.env.DB_PORT || 5432,
+  port: parseInt(process.env.DB_PORT || '5432'),
 });
 
 pool.on('error', (err) => {
@@ -14,7 +16,8 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-module.exports = {
-  query: (text, params) => pool.query(text, params),
+export const query = (text: string, params?: any[]): Promise<QueryResult> => pool.query(text, params);
+export default {
+  query,
   pool,
 };

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
+import eventRoutes from './routes/eventRoutes';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'SportSnap Backend API is running' });

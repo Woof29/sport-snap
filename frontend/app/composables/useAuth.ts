@@ -1,20 +1,25 @@
+export interface User {
+    id: number;
+    email: string;
+    role: string;
+}
+
 export const useAuth = () => {
     const token = useCookie('auth_token');
-    const user = useState('auth_user', () => null);
+    const user = useState<User | null>('auth_user', () => null);
 
     // Set base URL for API calls
     const config = useRuntimeConfig();
-    const API_BASE = 'http://localhost:3001/api'; // In prod, this should be env var
+    const API_BASE = config.public.apiBase;
 
     interface ApiResponse {
-        success: boolean;
-        error?: any;
-        data?: any;
+        token: string;
+        user: User;
     }
 
     const login = async (email: string, password: string) => {
         try {
-            const res: ApiResponse = await $fetch(`${API_BASE}/auth/login`, {
+            const { data, error } = await useFetch<ApiResponse>(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 body: {
                     email,
@@ -22,12 +27,14 @@ export const useAuth = () => {
                 }
             });
 
-            if (res.error) {
-                throw new Error(res.error.data?.message || 'Login failed');
+            if (error.value) {
+                throw new Error(error.value.message || 'Login failed');
             }
 
-            token.value = res.data.token;
-            user.value = res.data.user;
+            if (data.value) {
+                token.value = data.value.token;
+                user.value = data.value.user;
+            }
 
             return {
                 success: true
@@ -42,7 +49,7 @@ export const useAuth = () => {
 
     const register = async (email: string, password: string, role: string) => {
         try {
-            const res: ApiResponse = await $fetch(`${API_BASE}/auth/register`, {
+            const { data, error } = await useFetch<ApiResponse>(`${API_BASE}/auth/register`, {
                 method: 'POST',
                 body: {
                     email,
@@ -51,8 +58,8 @@ export const useAuth = () => {
                 }
             });
 
-            if (res.error) {
-                throw new Error(res.error.data?.message || 'Registration failed');
+            if (error.value) {
+                throw new Error(error.value.message || 'Registration failed');
             }
 
             return {

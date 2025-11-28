@@ -13,8 +13,12 @@ CREATE TABLE IF NOT EXISTS events (
   name VARCHAR(255) NOT NULL,
   date DATE NOT NULL,
   location VARCHAR(255),
+  description TEXT,
+  sport_type VARCHAR(50),
+  cover_image VARCHAR(500),
+  max_participants INTEGER,
   status VARCHAR(50) DEFAULT 'draft', -- draft, published, completed
-  organizer_id INTEGER, -- Nullable for now
+  organizer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

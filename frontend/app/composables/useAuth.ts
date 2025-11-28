@@ -1,60 +1,82 @@
 export const useAuth = () => {
-  const token = useCookie('auth_token');
-  const user = useState('auth_user', () => null);
+    const token = useCookie('auth_token');
+    const user = useState('auth_user', () => null);
 
-  // Set base URL for API calls
-  const config = useRuntimeConfig();
-  const API_BASE = 'http://localhost:3001/api'; // In prod, this should be env var
+    // Set base URL for API calls
+    const config = useRuntimeConfig();
+    const API_BASE = 'http://localhost:3001/api'; // In prod, this should be env var
 
-  const login = async (email: string, password: string) => {
-    try {
-      const { data, error } = await useFetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        body: { email, password },
-      });
-
-      if (error.value) {
-        throw new Error(error.value.data?.message || 'Login failed');
-      }
-
-      const response = data.value as any;
-      token.value = response.token;
-      user.value = response.user;
-      
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message };
+    interface ApiResponse {
+        success: boolean;
+        error?: any;
+        data?: any;
     }
-  };
 
-  const register = async (email: string, password: string, role: string) => {
-    try {
-      const { data, error } = await useFetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        body: { email, password, role },
-      });
+    const login = async (email: string, password: string) => {
+        try {
+            const res: ApiResponse = await $fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                body: {
+                    email,
+                    password
+                }
+            });
 
-      if (error.value) {
-        throw new Error(error.value.data?.message || 'Registration failed');
-      }
+            if (res.error) {
+                throw new Error(res.error.data?.message || 'Login failed');
+            }
 
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message };
-    }
-  };
+            token.value = res.data.token;
+            user.value = res.data.user;
 
-  const logout = () => {
-    token.value = null;
-    user.value = null;
-    navigateTo('/auth/login');
-  };
+            return {
+                success: true
+            };
+        } catch (err: any) {
+            return {
+                success: false,
+                error: err.message
+            };
+        }
+    };
 
-  return {
-    token,
-    user,
-    login,
-    register,
-    logout,
-  };
+    const register = async (email: string, password: string, role: string) => {
+        try {
+            const res: ApiResponse = await $fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                body: {
+                    email,
+                    password,
+                    role
+                }
+            });
+
+            if (res.error) {
+                throw new Error(res.error.data?.message || 'Registration failed');
+            }
+
+            return {
+                success: true
+            };
+        } catch (err: any) {
+            return {
+                success: false,
+                error: err.message
+            };
+        }
+    };
+
+    const logout = () => {
+        token.value = null;
+        user.value = null;
+        navigateTo('/auth/login');
+    };
+
+    return {
+        token,
+        user,
+        login,
+        register,
+        logout
+    };
 };

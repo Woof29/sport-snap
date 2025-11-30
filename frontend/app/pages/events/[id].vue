@@ -14,8 +14,8 @@
             <Button label="返回列表" icon="pi pi-arrow-left" variant="text" class="mb-4" @click="$router.back()" />
 
             <!-- Cover image -->
-            <div v-if="event.cover_image" class="mb-6 rounded-lg overflow-hidden">
-                <img :src="event.cover_image" :alt="event.name" class="w-full h-64 object-cover" />
+            <div v-if="event.coverImage" class="mb-6 rounded-lg overflow-hidden">
+                <img :src="event.coverImage" :alt="event.name" class="w-full h-64 object-cover" />
             </div>
 
             <!-- Event header -->
@@ -51,19 +51,14 @@
             <Card class="mb-6">
                 <template #content>
                     <div class="space-y-4">
-                        <div v-if="event.sport_type">
+                        <div v-if="event.sportType">
                             <h3 class="font-semibold text-lg mb-2">運動類型</h3>
-                            <Tag :value="getSportTypeLabel(event.sport_type)" severity="info" />
+                            <Tag :value="getSportTypeLabel(event.sportType)" severity="info" />
                         </div>
 
                         <div v-if="event.description">
                             <h3 class="font-semibold text-lg mb-2">賽事描述</h3>
                             <p class="text-gray-700 whitespace-pre-line">{{ event.description }}</p>
-                        </div>
-
-                        <div v-if="event.max_participants">
-                            <h3 class="font-semibold text-lg mb-2">參賽人數上限</h3>
-                            <p class="text-gray-700">{{ event.max_participants }} 人</p>
                         </div>
 
                         <div>
@@ -91,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Event } from '~/composables/useEvents';
+import type { Event } from '@shared/types/event';
 
 const route = useRoute();
 const router = useRouter();
@@ -106,7 +101,7 @@ const { data: event, pending, error } = await getEventById(eventId.value);
 // Check if current user is organizer
 const isOrganizer = computed(() => {
     if (!auth.user.value || !event.value) return false;
-    return event.value.organizer_id === auth.user.value.id;
+    return event.value.organizerId === auth.user.value.id;
 });
 
 // Check if current user is photographer
@@ -115,7 +110,7 @@ const isPhotographer = computed(() => {
 });
 
 // Format date
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr: string | Date) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('zh-TW', {
         year: 'numeric',

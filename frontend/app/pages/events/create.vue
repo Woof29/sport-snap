@@ -38,7 +38,7 @@
                         <label for="sport_type" class="font-medium">運動類型</label>
                         <Select
                             id="sport_type"
-                            v-model="form.sport_type"
+                            v-model="form.sportType"
                             :options="sportTypes"
                             optionLabel="label"
                             optionValue="value"
@@ -51,18 +51,8 @@
                         <label for="cover_image" class="font-medium">封面圖片 URL</label>
                         <InputText
                             id="cover_image"
-                            v-model="form.cover_image"
+                            v-model="form.coverImage"
                             placeholder="https://example.com/image.jpg"
-                        />
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label for="max_participants" class="font-medium">參賽人數上限</label>
-                        <InputNumber
-                            id="max_participants"
-                            v-model="form.max_participants"
-                            placeholder="例如：1000"
-                            fluid
                         />
                     </div>
 
@@ -105,9 +95,9 @@ const form = reactive({
     date: null,
     location: '',
     description: '',
-    sport_type: '',
-    cover_image: '',
-    max_participants: null
+    sportType: '',
+    coverImage: '',
+    status: ''
 });
 
 const loading = ref(false);

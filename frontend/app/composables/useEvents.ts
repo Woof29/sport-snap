@@ -1,16 +1,4 @@
-export interface Event {
-    id: number;
-    name: string;
-    date: string;
-    location: string;
-    description?: string;
-    sport_type?: string;
-    cover_image?: string;
-    max_participants?: number;
-    status: string;
-    organizer_id: number;
-    created_at: string;
-}
+import type { Event, CreateEventRequest, UpdateEventRequest } from '@shared/types/event';
 
 export const useEvents = () => {
     const config = useRuntimeConfig();
@@ -27,9 +15,9 @@ export const useEvents = () => {
     };
 
     // Create event
-    const createEvent = async (eventData: any) => {
+    const createEvent = async (eventData: CreateEventRequest) => {
         try {
-            const data = await $fetch(`${config.public.apiBase}/events`, {
+            const data = await $fetch<Event>(`${config.public.apiBase}/events`, {
                 method: 'POST',
                 body: eventData,
                 headers: {
@@ -46,9 +34,9 @@ export const useEvents = () => {
     };
 
     // Update event
-    const updateEvent = async (id: string, eventData: any) => {
+    const updateEvent = async (id: string, eventData: UpdateEventRequest) => {
         try {
-            const data = await $fetch(`${config.public.apiBase}/events/${id}`, {
+            const data = await $fetch<Event>(`${config.public.apiBase}/events/${id}`, {
                 method: 'PUT',
                 body: eventData,
                 headers: {

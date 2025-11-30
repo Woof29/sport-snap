@@ -1,7 +1,11 @@
 import Aura from '@primevue/themes/aura';
+import { fileURLToPath } from 'url';
 
 export default defineNuxtConfig({
     modules: ['@primevue/nuxt-module'],
+    alias: {
+        '@shared': fileURLToPath(new URL('../shared', import.meta.url))
+    },
     primevue: {
         autoImport: true,
         options: {

@@ -1,8 +1,5 @@
-export interface User {
-    id: number;
-    email: string;
-    role: string;
-}
+import type { User } from '@shared/types/user';
+import type { AuthResponse, CurrentUserResponse, LoginRequest, RegisterRequest } from '@shared/types/auth';
 
 export const useAuth = () => {
     const token = useCookie('auth_token');
@@ -12,28 +9,45 @@ export const useAuth = () => {
     const config = useRuntimeConfig();
     const API_BASE = config.public.apiBase;
 
-    interface ApiResponse {
-        token: string;
-        user: User;
-    }
+    // Check authentication status and load user if token exists
+    const checkAuth = async () => {
+        // Only check on client side
+        if (import.meta.server) return;
 
-    const login = async (email: string, password: string) => {
+        if (!token.value) {
+            user.value = null;
+            return;
+        }
+
         try {
-            const { data, error } = await useFetch<ApiResponse>(`${API_BASE}/auth/login`, {
-                method: 'POST',
-                body: {
-                    email,
-                    password
+            const response = await $fetch<CurrentUserResponse>(`${API_BASE}/auth/me`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token.value}`
                 }
             });
 
-            if (error.value) {
-                throw new Error(error.value.message || 'Login failed');
+            if (response) {
+                user.value = response.user;
             }
+        } catch (err) {
+            // Error fetching user, clear token
+            token.value = null;
+            user.value = null;
+        }
+    };
 
-            if (data.value) {
-                token.value = data.value.token;
-                user.value = data.value.user;
+    const login = async (email: string, password: string) => {
+        try {
+            const body: LoginRequest = { email, password };
+            const response = await $fetch<AuthResponse>(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                body
+            });
+
+            if (response) {
+                token.value = response.token;
+                user.value = response.user;
             }
 
             return {
@@ -42,25 +56,18 @@ export const useAuth = () => {
         } catch (err: any) {
             return {
                 success: false,
-                error: err.message
+                error: err.message || err.data?.message || 'Login failed'
             };
         }
     };
 
     const register = async (email: string, password: string, role: string) => {
         try {
-            const { data, error } = await useFetch<ApiResponse>(`${API_BASE}/auth/register`, {
+            const body: RegisterRequest = { email, password, role };
+            const response = await $fetch<AuthResponse>(`${API_BASE}/auth/register`, {
                 method: 'POST',
-                body: {
-                    email,
-                    password,
-                    role
-                }
+                body
             });
-
-            if (error.value) {
-                throw new Error(error.value.message || 'Registration failed');
-            }
 
             return {
                 success: true
@@ -68,7 +75,7 @@ export const useAuth = () => {
         } catch (err: any) {
             return {
                 success: false,
-                error: err.message
+                error: err.message || err.data?.message || 'Registration failed'
             };
         }
     };
@@ -84,6 +91,7 @@ export const useAuth = () => {
         user,
         login,
         register,
-        logout
+        logout,
+        checkAuth
     };
 };

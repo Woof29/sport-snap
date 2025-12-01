@@ -2,8 +2,17 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import * as userModel from '../models/userModel';
+import { AuthRequest } from '../types/middleware';
+import { LoginRequest, RegisterRequest } from '@shared/types/auth';
 
-export const register = async (req: Request, res: Response) => {
+interface JwtPayload {
+    user: {
+        id: number;
+        role: string;
+    };
+}
+
+export const register = async (req: AuthRequest<any, any, any, RegisterRequest>, res: Response) => {
     const { email, password, role } = req.body;
 
     try {
@@ -23,13 +32,15 @@ export const register = async (req: Request, res: Response) => {
         const newUser = await userModel.createUser({ email, passwordHash: hashedPassword, role: userRole });
 
         res.status(201).json(newUser);
-    } catch (err: any) {
-        console.error(err.message);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error(err.message);
+        }
         res.status(500).send('Server Error');
     }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: AuthRequest<any, any, any, LoginRequest>, res: Response) => {
     const { email, password } = req.body;
 
     try {
@@ -53,8 +64,34 @@ export const login = async (req: Request, res: Response) => {
             if (err) throw err;
             res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
         });
-    } catch (err: any) {
-        console.error(err.message);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error(err.message);
+        }
+        res.status(500).send('Server Error');
+    }
+};
+
+export const getCurrentUser = async (req: AuthRequest<JwtPayload>, res: Response) => {
+    try {
+        // req.user is set by authMiddleware
+        if (!req.user || !req.user.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const userId = req.user.user.id;
+        const user = await userModel.findUserById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return user without password hash
+        res.json({ user: { id: user.id, email: user.email, role: user.role } });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error(err.message);
+        }
         res.status(500).send('Server Error');
     }
 };

@@ -41,4 +41,9 @@ definePageMeta({
 });
 
 const auth = useAuth();
+
+onMounted(async () => {
+    // 檢查認證狀態並載入用戶資訊
+    await auth.checkAuth();
+});
 </script>

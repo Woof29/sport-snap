@@ -1,8 +1,9 @@
 import type { Event, CreateEventRequest, UpdateEventRequest } from '@shared/types/event';
+import { useAuthStore } from '~/stores/useAuthStore';
 
 export const useEvents = () => {
     const config = useRuntimeConfig();
-    const auth = useAuth();
+    const authStore = useAuthStore();
 
     // Get all events
     const getEvents = async () => {
@@ -21,7 +22,7 @@ export const useEvents = () => {
                 method: 'POST',
                 body: eventData,
                 headers: {
-                    Authorization: `Bearer ${auth.token.value}`
+                    Authorization: `Bearer ${authStore.token}`
                 }
             });
             return { success: true, data };
@@ -40,7 +41,7 @@ export const useEvents = () => {
                 method: 'PUT',
                 body: eventData,
                 headers: {
-                    Authorization: `Bearer ${auth.token.value}`
+                    Authorization: `Bearer ${authStore.token}`
                 }
             });
             return { success: true, data };
@@ -58,7 +59,7 @@ export const useEvents = () => {
             await $fetch(`${config.public.apiBase}/events/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    Authorization: `Bearer ${auth.token.value}`
+                    Authorization: `Bearer ${authStore.token}`
                 }
             });
             return { success: true };

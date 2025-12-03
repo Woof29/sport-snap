@@ -10,7 +10,7 @@
                 <nav class="flex items-center gap-3">
                     <Button label="賽事列表" as="router-link" to="/events" variant="text" severity="secondary" />
                     <ClientOnly>
-                        <template v-if="!auth.token.value">
+                        <template v-if="!authStore.isAuthenticated">
                             <Button
                                 label="登入"
                                 as="router-link"
@@ -47,5 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/useAuthStore';
+
 const auth = useAuth();
+const authStore = useAuthStore();
 </script>

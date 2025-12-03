@@ -2,7 +2,13 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900">賽事列表</h1>
-            <Button v-if="auth.token.value" label="建立賽事" icon="pi pi-plus" as="router-link" to="/events/create" />
+            <Button
+                v-if="authStore.user?.role === 'admin'"
+                label="建立賽事"
+                icon="pi pi-plus"
+                as="router-link"
+                to="/events/create"
+            />
         </div>
 
         <div v-if="pending" class="flex justify-center py-12">
@@ -21,8 +27,8 @@
                 @click="$router.push(`/events/${event.id}`)"
             >
                 <template #header>
-                    <div v-if="event.cover_image" class="h-48 overflow-hidden">
-                        <img :src="event.cover_image" :alt="event.name" class="w-full h-full object-cover" />
+                    <div v-if="event.coverImage" class="h-48 overflow-hidden">
+                        <img :src="event.coverImage" :alt="event.name" class="w-full h-full object-cover" />
                     </div>
                     <div v-else class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
                         <i class="pi pi-image text-4xl"></i>
@@ -38,14 +44,14 @@
                     <div class="flex flex-col gap-1 mt-2">
                         <div class="flex items-center gap-2">
                             <i class="pi pi-calendar"></i>
-                            <span>{{ formatDate(event.date) }}</span>
+                            <span>{{ formatDate(event.date as string) }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-map-marker"></i>
                             <span>{{ event.location }}</span>
                         </div>
-                        <div v-if="event.sport_type" class="flex items-center gap-2 mt-1">
-                            <Tag :value="getSportTypeLabel(event.sport_type)" severity="info" size="small" />
+                        <div v-if="event.sportType" class="flex items-center gap-2 mt-1">
+                            <Tag :value="getSportTypeLabel(event.sportType)" severity="info" size="small" />
                         </div>
                     </div>
                 </template>
@@ -65,7 +71,7 @@
 
 <script setup lang="ts">
 const { getEvents } = useEvents();
-const auth = useAuth();
+const authStore = useAuthStore();
 
 const { data: events, pending, error } = await getEvents();
 

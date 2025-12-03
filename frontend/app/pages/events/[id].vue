@@ -87,11 +87,12 @@
 
 <script setup lang="ts">
 import type { Event } from '@shared/types/event';
+import { useAuthStore } from '~/stores/useAuthStore';
 
 const route = useRoute();
 const router = useRouter();
 const { getEventById, deleteEvent } = useEvents();
-const auth = useAuth();
+const authStore = useAuthStore();
 
 const eventId = computed(() => route.params.id as string);
 
@@ -100,13 +101,13 @@ const { data: event, pending, error } = await getEventById(eventId.value);
 
 // Check if current user is organizer
 const isOrganizer = computed(() => {
-    if (!auth.user.value || !event.value) return false;
-    return event.value.organizerId === auth.user.value.id;
+    if (!authStore.user || !event.value) return false;
+    return event.value.organizerId === authStore.user.id;
 });
 
 // Check if current user is photographer
 const isPhotographer = computed(() => {
-    return auth.user.value?.role === 'photographer';
+    return authStore.user?.role === 'photographer';
 });
 
 // Format date

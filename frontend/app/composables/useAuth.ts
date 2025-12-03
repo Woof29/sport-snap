@@ -1,11 +1,8 @@
-import type { User } from '@shared/types/user';
 import type { AuthResponse, CurrentUserResponse, LoginRequest, RegisterRequest } from '@shared/types/auth';
+import { useAuthStore } from '~/stores/useAuthStore';
 
 export const useAuth = () => {
-    const token = useCookie('auth_token');
-    const user = useState<User | null>('auth_user', () => null);
-
-    // Set base URL for API calls
+    const authStore = useAuthStore();
     const config = useRuntimeConfig();
     const API_BASE = config.public.apiBase;
 
@@ -14,8 +11,8 @@ export const useAuth = () => {
         // Only check on client side
         if (import.meta.server) return;
 
-        if (!token.value) {
-            user.value = null;
+        if (!authStore.token) {
+            authStore.clearAuth();
             return;
         }
 
@@ -23,17 +20,16 @@ export const useAuth = () => {
             const response = await $fetch<CurrentUserResponse>(`${API_BASE}/auth/me`, {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${token.value}`
+                    Authorization: `Bearer ${authStore.token}`
                 }
             });
 
             if (response) {
-                user.value = response.user;
+                authStore.setUser(response.user);
             }
         } catch (err) {
-            // Error fetching user, clear token
-            token.value = null;
-            user.value = null;
+            // Error fetching user, clear auth
+            authStore.clearAuth();
         }
     };
 
@@ -46,8 +42,8 @@ export const useAuth = () => {
             });
 
             if (response) {
-                token.value = response.token;
-                user.value = response.user;
+                authStore.setToken(response.token);
+                authStore.setUser(response.user);
             }
 
             return {
@@ -64,7 +60,7 @@ export const useAuth = () => {
     const register = async (email: string, password: string, role: string) => {
         try {
             const body: RegisterRequest = { email, password, role };
-            const response = await $fetch<AuthResponse>(`${API_BASE}/auth/register`, {
+            await $fetch<AuthResponse>(`${API_BASE}/auth/register`, {
                 method: 'POST',
                 body
             });
@@ -81,14 +77,11 @@ export const useAuth = () => {
     };
 
     const logout = () => {
-        token.value = null;
-        user.value = null;
+        authStore.clearAuth();
         navigateTo('/auth/login');
     };
 
     return {
-        token,
-        user,
         login,
         register,
         logout,

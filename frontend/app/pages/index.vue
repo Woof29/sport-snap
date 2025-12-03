@@ -6,15 +6,15 @@
                 <p class="text-xl text-gray-600 mb-8">捕捉精彩瞬間，連結運動熱情</p>
 
                 <ClientOnly>
-                    <div v-if="auth.user.value" class="bg-green-50 p-6 rounded-lg inline-block text-left">
+                    <div v-if="authStore.user" class="bg-green-50 p-6 rounded-lg inline-block text-left">
                         <h3 class="text-lg font-medium text-green-800 mb-2">登入成功！</h3>
 
                         <p class="text-green-700">
                             <strong>Email:</strong>
-                            {{ auth.user.value.email }}
+                            {{ authStore.user.email }}
                             <br />
                             <strong>Role:</strong>
-                            {{ auth.user.value.role }}
+                            {{ authStore.user.role }}
                         </p>
                     </div>
 
@@ -36,11 +36,14 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/useAuthStore';
+
 definePageMeta({
     ssr: false // Disable SSR for this page to prevent hydration mismatch
 });
 
 const auth = useAuth();
+const authStore = useAuthStore();
 
 onMounted(async () => {
     // 檢查認證狀態並載入用戶資訊

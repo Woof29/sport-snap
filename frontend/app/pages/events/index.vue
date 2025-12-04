@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900">賽事列表</h1>
             <Button
-                v-if="authStore.user?.role === 'admin'"
+                v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'organizer'"
                 label="建立賽事"
                 icon="pi pi-plus"
                 as="router-link"

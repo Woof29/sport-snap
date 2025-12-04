@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import bcrypt from 'bcryptjs';
 
 export async function up(knex: Knex): Promise<void> {
     // 1. Users Table
@@ -80,6 +81,23 @@ export async function up(knex: Knex): Promise<void> {
             table.integer('photo_id').references('id').inTable('photos');
             table.decimal('price_at_purchase', 10, 2).notNullable();
         });
+    }
+
+    // 7. Seed Admin User
+    const adminEmail = 'admin@sport-snap.com';
+    if (await knex.schema.hasTable('users')) {
+        const existingAdmin = await knex('users').where({ email: adminEmail }).first();
+        if (!existingAdmin) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('sportsnap@7414', salt);
+
+            await knex('users').insert({
+                email: adminEmail,
+                password_hash: hashedPassword,
+                role: 'admin',
+                created_at: knex.fn.now()
+            });
+        }
     }
 }
 

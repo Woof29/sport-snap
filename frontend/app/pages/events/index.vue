@@ -72,6 +72,7 @@
 <script setup lang="ts">
 const { getEvents } = useEvents();
 const authStore = useAuthStore();
+const auth = useAuth();
 
 const { data: events, pending, error } = await getEvents();
 
@@ -114,4 +115,9 @@ const getStatusSeverity = (status: string) => {
             return 'contrast';
     }
 };
+
+onMounted(async () => {
+    // 檢查認證狀態並載入用戶資訊
+    await auth.checkAuth();
+});
 </script>

@@ -14,6 +14,21 @@ router.post('/register', authController.register);
 // @access  Public
 router.post('/login', authController.login);
 
+// @route   POST api/auth/google
+// @desc    Google Login (Verify Token & Login/Register)
+// @access  Public
+router.post('/google', authController.googleLogin);
+
+// @route   POST api/auth/forgot-password
+// @desc    Send password reset email
+// @access  Public
+router.post('/forgot-password', authController.forgotPassword);
+
+// @route   POST api/auth/reset-password
+// @desc    Reset password
+// @access  Public
+router.post('/reset-password', authController.resetPassword);
+
 // @route   GET api/auth/me
 // @desc    Get current user
 // @access  Private

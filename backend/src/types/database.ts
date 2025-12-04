@@ -2,11 +2,24 @@
 export type SqlValue = string | number | Date | boolean | null;
 
 // 資料庫原始回傳的 User 結構 (snake_case)
+// 注意：password_hash 已移除，新增 avatar
 export interface UserRow {
     id: number;
     email: string;
-    password_hash: string;
     role: string;
+    avatar: string | null;
+    created_at: Date;
+    reset_password_token?: string | null;
+    reset_password_expires?: Date | null;
+}
+
+// 資料庫原始回傳的 UserIdentity 結構 (snake_case)
+export interface UserIdentityRow {
+    id: number;
+    user_id: number;
+    provider: string;
+    provider_id: string | null;
+    credential: string | null;
     created_at: Date;
 }
 

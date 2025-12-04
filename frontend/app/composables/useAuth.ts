@@ -1,5 +1,11 @@
-import type { AuthResponse, CurrentUserResponse, LoginRequest, RegisterRequest } from '@shared/types/auth';
-import { useAuthStore } from '~/stores/useAuthStore';
+import type {
+    AuthResponse,
+    CurrentUserResponse,
+    LoginRequest,
+    RegisterRequest,
+    GoogleLoginRequest
+} from '@shared/types/auth';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export const useAuth = () => {
     const authStore = useAuthStore();
@@ -57,6 +63,30 @@ export const useAuth = () => {
         }
     };
 
+    const googleLogin = async (idToken: string, role?: string) => {
+        try {
+            const body: GoogleLoginRequest = { idToken, role };
+            const response = await $fetch<AuthResponse>(`${API_BASE}/auth/google`, {
+                method: 'POST',
+                body
+            });
+
+            if (response) {
+                authStore.setToken(response.token);
+                authStore.setUser(response.user);
+            }
+
+            return {
+                success: true
+            };
+        } catch (err: any) {
+            return {
+                success: false,
+                error: err.message || err.data?.message || 'Google Login failed'
+            };
+        }
+    };
+
     const register = async (email: string, password: string, role: string) => {
         try {
             const body: RegisterRequest = { email, password, role };
@@ -83,6 +113,7 @@ export const useAuth = () => {
 
     return {
         login,
+        googleLogin,
         register,
         logout,
         checkAuth

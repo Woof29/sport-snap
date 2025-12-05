@@ -4,7 +4,7 @@ import type {
     LoginRequest,
     RegisterRequest,
     GoogleLoginRequest
-} from '@shared/types/auth';
+} from '../../types/auth';
 import { useAuthStore } from '../stores/useAuthStore';
 
 export const useAuth = () => {

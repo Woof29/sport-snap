@@ -1,6 +1,6 @@
 import db from '../config/db';
 import { SqlValue, EventRow } from '../types/database';
-import { Event } from '@shared/types/event';
+import { Event } from '../types/event';
 
 export interface CreateEventParams {
     name: string;

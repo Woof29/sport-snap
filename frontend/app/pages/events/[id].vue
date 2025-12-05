@@ -86,7 +86,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Event } from '@shared/types/event';
 import { useAuthStore } from '~/stores/useAuthStore';
 
 const route = useRoute();

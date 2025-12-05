@@ -12,7 +12,7 @@ import {
     ForgotPasswordRequest,
     ResetPasswordRequest,
     GoogleLoginRequest
-} from '@shared/types/auth';
+} from '../types/auth';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

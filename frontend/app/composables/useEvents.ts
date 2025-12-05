@@ -1,4 +1,4 @@
-import type { Event, CreateEventRequest, UpdateEventRequest } from '@shared/types/event';
+import type { Event, CreateEventRequest, UpdateEventRequest } from '~/types/event';
 import { useAuthStore } from '~/stores/useAuthStore';
 
 export const useEvents = () => {

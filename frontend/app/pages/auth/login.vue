@@ -17,7 +17,9 @@
                 <div class="flex flex-col gap-4">
                     <!-- Google Login Button -->
                     <div class="flex justify-center">
-                        <GoogleLogin :callback="handleGoogleCallback" />
+                        <ClientOnly>
+                            <GoogleLogin :callback="handleGoogleCallback" />
+                        </ClientOnly>
                     </div>
 
                     <div class="relative">
@@ -53,14 +55,14 @@
                                 inputClass="w-full"
                                 inputId="password_input"
                             />
-                            <div class="text-right">
+                            <!-- <div class="text-right">
                                 <NuxtLink
                                     to="/auth/forgot-password"
                                     class="text-sm text-primary-600 hover:text-primary-500"
                                 >
                                     忘記密碼？
                                 </NuxtLink>
-                            </div>
+                            </div> -->
                         </div>
 
                         <Message v-if="error" severity="error" :closable="false">{{ error }}</Message>
@@ -74,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CallbackTypes } from 'vue3-google-login';
+import { GoogleLogin, type CallbackTypes } from 'vue3-google-login';
 
 const email = ref('');
 const password = ref('');

@@ -15,7 +15,8 @@ const config: { [key: string]: Knex.Config } = {
             port: Number(process.env.DB_PORT) || 5433,
             database: process.env.DB_NAME || 'sport_snap',
             user: process.env.DB_USER || 'postgres',
-            password: process.env.DB_PASSWORD || 'postgres'
+            password: process.env.DB_PASSWORD || 'postgres',
+            ssl: process.env.DB_HOST === 'localhost' ? false : { rejectUnauthorized: false }
         },
         pool: {
             min: 2,
